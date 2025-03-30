@@ -1,15 +1,17 @@
-﻿using System;
+﻿using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class TomographySlicer : MonoBehaviour
 {
     [SerializeField] private TomographySO tomographyData;
     [SerializeField] private Tomography currentTomography;
     [SerializeField] private Axis currentAxis;
-    [SerializeField][Range(28, 238)] private int currentIndex;
+    [SerializeField][Range(0, 511)] private int currentIndex;
     [SerializeField] private Vector3 dimensions;
     [SerializeField] private List<Transform> pivotPoints;
+    [SerializeField] private bool filterBrightness;
+    [SerializeField][Range(0, 1)] private float minBrightness;
+    [SerializeField][Range(0, 1)] private float maxBrightness = 1;
 
     private MeshRenderer _meshRenderer;
 
@@ -25,14 +27,35 @@ public class TomographySlicer : MonoBehaviour
 
     private void UpdateSlice()
     {
-        _meshRenderer.material.mainTexture = tomographyData.Slices[currentTomography][currentAxis][currentIndex];
+        var texture = tomographyData.Slices[currentAxis][currentIndex];
+        if (filterBrightness) texture = FilterBrightness(texture);
+        _meshRenderer.material.mainTexture = texture;
 
         transform.SetParent(pivotPoints[(int)currentAxis], false);
         transform.localPosition = Vector3.zero;
         transform.localRotation = Quaternion.identity;
 
-        var step = dimensions[(int)currentAxis] / 210;
+        var dimension = ((int)currentAxis + 2) % 3;
+        var step = dimensions[dimension] / tomographyData.Slices[currentAxis].Count;
         transform.localPosition = Vector3.forward * (currentIndex * step);
+    }
+
+    private Texture2D FilterBrightness(Texture2D texture)
+    {
+        var filteredTexture = new Texture2D(texture.width, texture.height, TextureFormat.RGBA64, false);
+        filteredTexture.CopyPixels(texture);
+        
+        for (var i = 0; i < filteredTexture.width; i++)
+        {
+            for (var j = 0; j < filteredTexture.height; j++)
+            {
+                if (filteredTexture.GetPixel(i, j).r < maxBrightness && filteredTexture.GetPixel(i, j).r > minBrightness) continue;
+                filteredTexture.SetPixel(i, j, Color.black);
+            }
+        }
+        
+        filteredTexture.Apply();
+        return filteredTexture;
     }
 }
 
@@ -44,7 +67,7 @@ public enum Tomography
 
 public enum Axis
 {
-    X,
-    Y,
-    Z
+    Axial,
+    Sagittal,
+    Coronal
 }
