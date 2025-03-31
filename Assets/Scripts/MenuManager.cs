@@ -1,55 +1,49 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class MenuManager : MonoBehaviour
 {
-    [SerializeField] private GameObject menuAtlas;
-    [SerializeField] private GameObject menuCT;
-    [SerializeField] private GameObject menuMR;
-    [SerializeField] private GameObject menuUS;
-    [SerializeField] private GameObject menuAnatomy;
+    [SerializeField] private List<Mode> modes;
 
     public void OpenMenuAtlas()
     {
-        menuAtlas.SetActive(true);
-        menuCT.SetActive(false);
-        menuMR.SetActive(false);
-        menuUS.SetActive(false);
-        menuAnatomy.SetActive(false);
+        SetModeVisibility(0);
     }
 
     public void OpenMenuCT()
     {
-        menuCT.SetActive(true);
-        menuAtlas.SetActive(false);
-        menuMR.SetActive(false);
-        menuUS.SetActive(false);
-        menuAnatomy.SetActive(false);
+        SetModeVisibility(1);
     }
 
     public void OpenMenuMR()
     {
-        menuMR.SetActive(true);
-        menuAtlas.SetActive(false);
-        menuCT.SetActive(false);
-        menuUS.SetActive(false);
-        menuAnatomy.SetActive(false);
+        SetModeVisibility(2);
     }
 
-    public void OpenMenuUS()
+    public void OpenMenuMU()
     {
-        menuUS.SetActive(true);
-        menuAtlas.SetActive(false);
-        menuCT.SetActive(false);
-        menuMR.SetActive(false);
-        menuAnatomy.SetActive(false);
+        SetModeVisibility(3);
     }
 
     public void OpenMenuAnatomy()
     {
-        menuAnatomy.SetActive(true);
-        menuAtlas.SetActive(false);
-        menuCT.SetActive(false);
-        menuMR.SetActive(false);
-        menuUS.SetActive(false);
+        SetModeVisibility(4);
     }
+
+    private void SetModeVisibility(int index)
+    {
+        for (var i = 0; i < modes.Count; i++)
+        {
+            modes[i].menu.SetActive(i == index);
+            modes[i].item.SetActive(i == index);
+        }
+    }
+}
+
+[Serializable]
+public struct Mode
+{
+    public GameObject menu;
+    public GameObject item;
 }

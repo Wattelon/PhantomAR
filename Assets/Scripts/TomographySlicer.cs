@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections.Generic;
 
 public class TomographySlicer : MonoBehaviour
@@ -20,7 +21,7 @@ public class TomographySlicer : MonoBehaviour
         _meshRenderer = GetComponent<MeshRenderer>();
     }
 
-    private void Update()
+    private void OnEnable()
     {
         UpdateSlice();
     }
@@ -56,6 +57,30 @@ public class TomographySlicer : MonoBehaviour
         
         filteredTexture.Apply();
         return filteredTexture;
+    }
+
+    public void SetAxis(int axis)
+    {
+        currentAxis = (Axis)axis;
+        UpdateSlice();
+    }
+
+    public void SetIndex(float index)
+    {
+        currentIndex = (int)index;
+        UpdateSlice();
+    }
+
+    public void SetMinBrightness(float value)
+    {
+        minBrightness = value;
+        UpdateSlice();
+    }
+
+    public void SetMaxBrightness(float value)
+    {
+        maxBrightness = value;
+        UpdateSlice();
     }
 }
 

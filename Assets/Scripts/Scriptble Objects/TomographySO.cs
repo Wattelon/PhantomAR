@@ -11,12 +11,9 @@ public class TomographySO : ScriptableObject
 {
     private protected Tomography tomography;
     
-    private static readonly int TomographyVolume = Shader.PropertyToID("_TomographyVolume");
-    
     private Dictionary<Axis, List<Texture2D>> _slices;
     private List<DicomFile> _dicomFiles;
     private ushort[,,] _volumeData;
-    private Color[] _voxels;
     private int _width;
     private int _height;
     private int _depth;
@@ -25,26 +22,24 @@ public class TomographySO : ScriptableObject
 
     public Dictionary<Axis, List<Texture2D>> Slices => _slices;
 
-    private void OnValidate()
+#if UNITY_EDITOR
+    private protected virtual void OnValidate()
     {
+        LoadDicomFiles();
+        SetDimensions();
+        SetVolumeData();
         LoadTextures();
-        //SetGlobalTexture3D();
     }
 
     private protected virtual void Reset()
     {
         ClearTextures();
-        SetupTomography();
-    }
-
-    private void SetupTomography()
-    {
         LoadDicomFiles();
         SetDimensions();
         SetVolumeData();
         GenerateSlices();
     }
-
+    
     private void LoadDicomFiles()
     {
         _dicomFiles = new List<DicomFile>();
@@ -71,7 +66,6 @@ public class TomographySO : ScriptableObject
     private void SetVolumeData()
     {
         _volumeData = new ushort[_width, _height, _depth];
-        _voxels = new Color[_width * _height * _depth];
         
         for (var z = 0; z < _depth; z++)
         {
@@ -84,9 +78,6 @@ public class TomographySO : ScriptableObject
                 {
                     var pixelValue = (ushort)image.GetPixel(x, y).Value;
                     _volumeData[x, y, z] = pixelValue;
-                    var index = (z * _height + y) * _width + x;
-                    var intensity = pixelValue / (float)ushort.MaxValue;
-                    _voxels[index] = new Color(intensity, intensity, intensity, 1);
                 }
             }
         }
@@ -184,19 +175,5 @@ public class TomographySO : ScriptableObject
             AssetDatabase.CreateFolder($"Assets/Resources/Tomography/{tomography.ToString()}", axis.ToString());
         }
     }
-
-    private void SetGlobalTexture3D()
-    {
-        var texture = new Texture3D(_width, _height, _depth, TextureFormat.RGBA32, false)
-        {
-            filterMode = FilterMode.Bilinear,
-            wrapMode = TextureWrapMode.Clamp
-        };
-        
-        texture.SetPixels(_voxels);
-        texture.Apply();
-        
-        Shader.SetGlobalTexture(TomographyVolume, texture);
-        Debug.Log(_voxels[_voxels.Length / 2]);
-    }
+#endif
 }
