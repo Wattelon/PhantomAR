@@ -3,7 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "MagneticResonanceTomographySO", menuName = "Scriptable Objects/MagneticResonanceTomography")]
 public class MagneticResonanceTomographySO : TomographySO
 {
-#if UNITY_EDITOR
+/*#if UNITY_EDITOR
     private protected override void OnValidate()
     {
         tomography = Tomography.MagneticResonance;
@@ -15,5 +15,5 @@ public class MagneticResonanceTomographySO : TomographySO
         tomography = Tomography.MagneticResonance;
         base.Reset();
     }
-#endif
+#endif*/
 }

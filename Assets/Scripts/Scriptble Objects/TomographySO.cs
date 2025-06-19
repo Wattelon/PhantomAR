@@ -11,18 +11,18 @@ public class TomographySO : ScriptableObject
 {
     private protected Tomography tomography;
     
-    private Dictionary<Axis, List<Texture2D>> _slices;
+    private Dictionary<Axis, List<Texture2D>> _slices = new ();
     private List<DicomFile> _dicomFiles;
     private ushort[,,] _volumeData;
-    private int _width;
-    private int _height;
-    private int _depth;
+    private int _width = 512;
+    private int _height = 512;
+    private int _depth = 372;
     private float _rescaleSlope;
     private float _rescaleIntercept;
 
     public Dictionary<Axis, List<Texture2D>> Slices => _slices;
 
-#if UNITY_EDITOR
+/*#if UNITY_EDITOR
     private protected virtual void OnValidate()
     {
         LoadDicomFiles();
@@ -175,5 +175,5 @@ public class TomographySO : ScriptableObject
             AssetDatabase.CreateFolder($"Assets/Resources/Tomography/{tomography.ToString()}", axis.ToString());
         }
     }
-#endif
+#endif*/
 }

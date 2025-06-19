@@ -14,6 +14,10 @@ public class TomographySlicer : MonoBehaviour
     [SerializeField][Range(0, 1)] private float minBrightness;
     [SerializeField][Range(0, 1)] private float maxBrightness = 1;
 
+    [SerializeField] private List<Texture2D> slicesAxial;
+    [SerializeField] private List<Texture2D> slicesSagittal;
+    [SerializeField] private List<Texture2D> slicesCoronal;
+
     private MeshRenderer _meshRenderer;
 
     private void Awake()
@@ -24,6 +28,13 @@ public class TomographySlicer : MonoBehaviour
     private void OnEnable()
     {
         UpdateSlice();
+    }
+
+    private void Start()
+    {
+        tomographyData.Slices.Add(Axis.Axial, slicesAxial);
+        tomographyData.Slices.Add(Axis.Sagittal, slicesSagittal);
+        tomographyData.Slices.Add(Axis.Coronal, slicesCoronal);
     }
 
     private void UpdateSlice()
